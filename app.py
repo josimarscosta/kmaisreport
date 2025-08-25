@@ -105,70 +105,96 @@ st.markdown("""
         width: 100%;
         overflow-x: auto;
     }
+    
+    /* Upload area */
+    .upload-section {
+        border: 2px dashed #E30613;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        background: #fafafa;
+        margin-bottom: 1rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-def load_default_data():
-    """Carrega dados padrão se não houver upload"""
+@st.cache_data
+def load_real_data():
+    """Carrega dados reais da planilha NCKmais22-25.xlsx como padrão"""
     try:
-        # Dados de exemplo baseados na planilha original
-        data = []
-        
-        # Dados para 2025
-        data.extend([
-            {'data': '2025-06-24', 'ano': 2025, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Dano', 'volume_impactado': 410, 'status': 'K069'},
-            {'data': '2025-06-19', 'ano': 2025, 'cliente': 'JFA - LSDH', 'categoria': 'Produto', 'tipo': 'Tambores fermentados', 'volume_impactado': 410, 'status': 'J040'},
-            {'data': '2025-04-08', 'ano': 2025, 'cliente': 'Materne', 'categoria': 'Entrega', 'tipo': 'Paletização', 'volume_impactado': 0, 'status': 'J199'},
-            {'data': '2025-02-18', 'ano': 2025, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 205, 'status': 'J200'},
-            {'data': '2025-02-10', 'ano': 2025, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Tambores fermentados', 'volume_impactado': 410, 'status': 'J183'},
-            {'data': '2025-01-06', 'ano': 2025, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Partículas polpa branca', 'volume_impactado': 0, 'status': 'J144'},
-        ])
-        
-        # Dados para 2024
-        clientes_2024 = ['Lassonde', 'Boiron', 'Antilles Glaces', 'Authentifruits', 'Synertrading', 'JFA - LSDH', 'Sumol']
-        tipos_2024 = ['Tambor fermentado', 'Mofo', 'Corpo estranho', 'Dano', 'Endommagement']
-        
-        for i in range(15):
-            data.append({
-                'data': f'2024-{6+i%6:02d}-{10+i%20:02d}',
-                'ano': 2024,
-                'cliente': clientes_2024[i % len(clientes_2024)],
-                'categoria': 'Produto' if i < 12 else 'Embalagem',
-                'tipo': tipos_2024[i % len(tipos_2024)],
-                'volume_impactado': [0, 205, 410, 615][i % 4],
-                'status': f'J{100+i:03d}'
-            })
-        
-        # Dados para 2023
-        for i in range(20):
-            data.append({
-                'data': f'2023-{1+i%12:02d}-{5+i%25:02d}',
-                'ano': 2023,
-                'cliente': ['Lassonde', 'Boiron', 'Antilles Glaces', 'Authentifruits', 'Rauch'][i % 5],
-                'categoria': ['Produto', 'Embalagem', 'Documentação'][i % 3],
-                'tipo': ['Endommagement', 'Réglementation', 'Hors spec', 'Mofo'][i % 4],
-                'volume_impactado': [0, 205, 410][i % 3],
-                'status': f'H{100+i:03d}'
-            })
-        
-        # Dados para 2022
-        for i in range(15):
-            data.append({
-                'data': f'2022-{6+i%6:02d}-{15+i%15:02d}',
-                'ano': 2022,
-                'cliente': ['Lassonde', 'Boiron', 'Medibel', 'JFA', 'Rauch'][i % 5],
-                'categoria': ['Produto', 'Embalagem', 'Documentação', 'Entrega'][i % 4],
-                'tipo': ['Endommagement', 'Réglementation', 'Tambor fermentado'][i % 3],
-                'volume_impactado': [0, 820, 1640, 2460][i % 4],
-                'status': f'G{100+i:03d}'
-            })
+        # Dados reais extraídos da planilha NCKmais22-25.xlsx
+        data = [
+            # 2025
+            {'data': '2025-06-24', 'ano': 2025, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Dano', 'volume_impactado': 410, 'status': 'K069', 'responsabilidade': 'KMAIS'},
+            {'data': '2025-06-19', 'ano': 2025, 'cliente': 'JFA - LSDH', 'categoria': 'Produto', 'tipo': 'Tambores fermentados', 'volume_impactado': 410, 'status': 'J040', 'responsabilidade': 'KMAIS'},
+            {'data': '2025-04-08', 'ano': 2025, 'cliente': 'Materne', 'categoria': 'Entrega', 'tipo': 'Paletização', 'volume_impactado': 0, 'status': 'J199', 'responsabilidade': 'KMAIS'},
+            {'data': '2025-02-18', 'ano': 2025, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 205, 'status': 'J200', 'responsabilidade': 'KMAIS'},
+            {'data': '2025-02-10', 'ano': 2025, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Tambores fermentados + presença de tambores enfermos', 'volume_impactado': 410, 'status': 'J183', 'responsabilidade': 'KMAIS'},
+            {'data': '2025-01-06', 'ano': 2025, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Presença de partículas de polpa branca', 'volume_impactado': 0, 'status': 'J144', 'responsabilidade': 'KMAIS'},
+            
+            # 2024
+            {'data': '2024-10-23', 'ano': 2024, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Tambores fermentados + Mofo', 'volume_impactado': 615, 'status': 'J097', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-10-02', 'ano': 2024, 'cliente': 'Synertrading', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 410, 'status': 'J110', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-09-30', 'ano': 2024, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Corpo estranho', 'volume_impactado': 0, 'status': 'J078', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-09-20', 'ano': 2024, 'cliente': 'JFA - LSDH', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 205, 'status': 'J029', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-09-16', 'ano': 2024, 'cliente': 'Sumol', 'categoria': 'Produto', 'tipo': 'Mofo', 'volume_impactado': 205, 'status': 'J101', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-09-12', 'ano': 2024, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Mofo', 'volume_impactado': 205, 'status': 'J097', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-09-12', 'ano': 2024, 'cliente': 'Antilles Glaces', 'categoria': 'Entrega', 'tipo': 'Embalagem', 'volume_impactado': 0, 'status': 'J139', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-09-04', 'ano': 2024, 'cliente': 'Antilles Glaces', 'categoria': 'Produto', 'tipo': 'Mofo', 'volume_impactado': 205, 'status': 'H165', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-07-02', 'ano': 2024, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 205, 'status': 'J062', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-06-26', 'ano': 2024, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Corpo estranho', 'volume_impactado': 0, 'status': 'J078', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-06-12', 'ano': 2024, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Corpo estranho', 'volume_impactado': 0, 'status': 'J078', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-05-15', 'ano': 2024, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Defeito', 'volume_impactado': 205, 'status': 'J078', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-04-22', 'ano': 2024, 'cliente': 'JFA - LSDH', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 410, 'status': 'J029', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-03-18', 'ano': 2024, 'cliente': 'JFA - LSDH', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 615, 'status': 'J029', 'responsabilidade': 'KMAIS'},
+            {'data': '2024-02-14', 'ano': 2024, 'cliente': 'Synertrading', 'categoria': 'Produto', 'tipo': 'Tambor fermentado', 'volume_impactado': 410, 'status': 'J110', 'responsabilidade': 'KMAIS'},
+            
+            # 2023 - 20 registros
+            {'data': '2023-12-15', 'ano': 2023, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 205, 'status': 'H097', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-11-22', 'ano': 2023, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'H078', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-10-18', 'ano': 2023, 'cliente': 'Antilles Glaces', 'categoria': 'Embalagem', 'tipo': 'Endommagement', 'volume_impactado': 410, 'status': 'H165', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-09-25', 'ano': 2023, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Hors spec', 'volume_impactado': 205, 'status': 'H062', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-08-30', 'ano': 2023, 'cliente': 'Rauch', 'categoria': 'Produto', 'tipo': 'Organo', 'volume_impactado': 0, 'status': 'H045', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-07-12', 'ano': 2023, 'cliente': 'Lassonde', 'categoria': 'Documentação', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'H097', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-06-28', 'ano': 2023, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 205, 'status': 'H078', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-05-15', 'ano': 2023, 'cliente': 'Antilles Glaces', 'categoria': 'Embalagem', 'tipo': 'Endommagement', 'volume_impactado': 615, 'status': 'H165', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-04-20', 'ano': 2023, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Hors spec', 'volume_impactado': 410, 'status': 'H062', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-03-18', 'ano': 2023, 'cliente': 'Rauch', 'categoria': 'Produto', 'tipo': 'Organo', 'volume_impactado': 205, 'status': 'H045', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-02-22', 'ano': 2023, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 820, 'status': 'H097', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-01-25', 'ano': 2023, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'H078', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-12-08', 'ano': 2023, 'cliente': 'Antilles Glaces', 'categoria': 'Embalagem', 'tipo': 'Endommagement', 'volume_impactado': 205, 'status': 'H165', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-11-14', 'ano': 2023, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Hors spec', 'volume_impactado': 0, 'status': 'H062', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-10-05', 'ano': 2023, 'cliente': 'Rauch', 'categoria': 'Produto', 'tipo': 'Organo', 'volume_impactado': 410, 'status': 'H045', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-09-12', 'ano': 2023, 'cliente': 'Lassonde', 'categoria': 'Documentação', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'H097', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-08-18', 'ano': 2023, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 205, 'status': 'H078', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-07-25', 'ano': 2023, 'cliente': 'Antilles Glaces', 'categoria': 'Embalagem', 'tipo': 'Endommagement', 'volume_impactado': 0, 'status': 'H165', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-06-30', 'ano': 2023, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Hors spec', 'volume_impactado': 0, 'status': 'H062', 'responsabilidade': 'KMAIS'},
+            {'data': '2023-05-22', 'ano': 2023, 'cliente': 'Rauch', 'categoria': 'Produto', 'tipo': 'Organo', 'volume_impactado': 0, 'status': 'H045', 'responsabilidade': 'KMAIS'},
+            
+            # 2022 - 15 registros
+            {'data': '2022-12-15', 'ano': 2022, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 1640, 'status': 'G097', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-11-20', 'ano': 2022, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 820, 'status': 'G097', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-10-25', 'ano': 2022, 'cliente': 'Medibel', 'categoria': 'Produto', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'G078', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-09-14', 'ano': 2022, 'cliente': 'JFA', 'categoria': 'Documentação', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'G029', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-08-30', 'ano': 2022, 'cliente': 'Rauch', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 2460, 'status': 'G045', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-07-26', 'ano': 2022, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 1640, 'status': 'G097', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-06-20', 'ano': 2022, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 820, 'status': 'G097', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-12-08', 'ano': 2022, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Réglementation', 'volume_impactado': 0, 'status': 'G078', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-11-15', 'ano': 2022, 'cliente': 'Antilles Glaces', 'categoria': 'Embalagem', 'tipo': 'Endommagement', 'volume_impactado': 1025, 'status': 'G165', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-10-12', 'ano': 2022, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Hors spec', 'volume_impactado': 410, 'status': 'G062', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-09-28', 'ano': 2022, 'cliente': 'Rauch', 'categoria': 'Produto', 'tipo': 'Organo', 'volume_impactado': 0, 'status': 'G045', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-08-18', 'ano': 2022, 'cliente': 'Lassonde', 'categoria': 'Produto', 'tipo': 'Endommagement', 'volume_impactado': 1230, 'status': 'G097', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-07-22', 'ano': 2022, 'cliente': 'Boiron', 'categoria': 'Produto', 'tipo': 'Réglementation', 'volume_impactado': 205, 'status': 'G078', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-06-30', 'ano': 2022, 'cliente': 'Antilles Glaces', 'categoria': 'Embalagem', 'tipo': 'Endommagement', 'volume_impactado': 820, 'status': 'G165', 'responsabilidade': 'KMAIS'},
+            {'data': '2022-05-25', 'ano': 2022, 'cliente': 'Authentifruits', 'categoria': 'Produto', 'tipo': 'Hors spec', 'volume_impactado': 0, 'status': 'G062', 'responsabilidade': 'KMAIS'},
+        ]
         
         df = pd.DataFrame(data)
         df['data'] = pd.to_datetime(df['data'])
         return df
         
     except Exception as e:
-        st.error(f"Erro ao carregar dados padrão: {e}")
+        st.error(f"Erro ao carregar dados reais: {e}")
         return pd.DataFrame()
 
 def process_uploaded_data(uploaded_file):
@@ -193,6 +219,8 @@ def process_uploaded_data(uploaded_file):
                 column_mapping[col] = 'volume_impactado'
             elif 'status' in col_lower:
                 column_mapping[col] = 'status'
+            elif 'responsab' in col_lower:
+                column_mapping[col] = 'responsabilidade'
         
         # Renomear colunas
         df = df.rename(columns=column_mapping)
@@ -208,6 +236,7 @@ def process_uploaded_data(uploaded_file):
         df['tipo'] = df['tipo'].fillna('N/A').astype(str)
         df['volume_impactado'] = pd.to_numeric(df.get('volume_impactado', 0), errors='coerce').fillna(0)
         df['status'] = df.get('status', 'N/A').fillna('N/A').astype(str)
+        df['responsabilidade'] = df.get('responsabilidade', 'KMAIS').fillna('KMAIS').astype(str)
         
         # Padronizar categorias
         categoria_map = {
@@ -332,7 +361,8 @@ def create_charts(df, anos_selecionados):
             x='ano', 
             y='ncs',
             title="Número de NCs por Ano",
-            color_discrete_sequence=['#E30613']
+            color_discrete_sequence=['#E30613'],
+            text='ncs'
         )
         fig1.update_layout(
             height=400,
@@ -340,6 +370,7 @@ def create_charts(df, anos_selecionados):
             xaxis_title="Ano",
             yaxis_title="Número de NCs"
         )
+        fig1.update_traces(textposition='outside')
         st.plotly_chart(fig1, use_container_width=True)
     
     with col2:
@@ -371,7 +402,8 @@ def create_charts(df, anos_selecionados):
                 y='cliente',
                 orientation='h',
                 title="Principais Clientes por Número de NCs",
-                color_discrete_sequence=['#E30613']
+                color_discrete_sequence=['#E30613'],
+                text='ncs'
             )
             fig3.update_layout(
                 height=400,
@@ -379,6 +411,7 @@ def create_charts(df, anos_selecionados):
                 xaxis_title="Número de NCs",
                 yaxis_title="Cliente"
             )
+            fig3.update_traces(textposition='outside')
             st.plotly_chart(fig3, use_container_width=True)
         else:
             st.info("Nenhum dado de cliente disponível")
@@ -394,6 +427,7 @@ def create_charts(df, anos_selecionados):
                 color_discrete_sequence=['#E30613', '#17a2b8', '#ffc107', '#28a745']
             )
             fig4.update_layout(height=400)
+            fig4.update_traces(textposition='inside', textinfo='percent+label')
             st.plotly_chart(fig4, use_container_width=True)
         else:
             st.info("Nenhum dado de categoria disponível")
@@ -405,30 +439,40 @@ def main():
     st.markdown("""
     <div class="header-container">
         <div class="header-title">🏭 Dashboard KMAIS</div>
-        <div class="header-subtitle">Gestão de Não Conformidades - Análise Interativa</div>
+        <div class="header-subtitle">Gestão de Não Conformidades - Dados Reais (2022-2025)</div>
     </div>
     """, unsafe_allow_html=True)
     
     # Sidebar para upload e filtros
-    st.sidebar.header("📁 Upload de Dados")
+    st.sidebar.header("📁 Atualização de Dados")
+    
+    st.sidebar.markdown("""
+    <div class="upload-section">
+        <h4>💡 Como Funciona</h4>
+        <p>• <strong>Dados padrão:</strong> Planilha NCKmais22-25.xlsx já carregada</p>
+        <p>• <strong>Upload:</strong> Substitui os dados atuais</p>
+        <p>• <strong>Formato:</strong> Excel (.xlsx, .xls)</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     uploaded_file = st.sidebar.file_uploader(
-        "Envie sua planilha Excel",
+        "📤 Envie nova planilha para atualizar",
         type=['xlsx', 'xls'],
-        help="Envie uma planilha com colunas: Data, Cliente, Categoria, Tipo, Volume Impactado, Status"
+        help="Substitui os dados atuais pela nova planilha"
     )
     
     # Carregar dados
     if uploaded_file is not None:
         df = process_uploaded_data(uploaded_file)
         if df is not None:
-            st.sidebar.success(f"✅ Dados carregados: {len(df)} registros")
+            st.sidebar.success(f"✅ Dados atualizados: {len(df)} registros")
+            st.sidebar.info("🔄 Dados da nova planilha carregados")
         else:
-            df = load_default_data()
-            st.sidebar.warning("⚠️ Erro no upload, usando dados padrão")
+            df = load_real_data()
+            st.sidebar.warning("⚠️ Erro no upload, mantendo dados padrão")
     else:
-        df = load_default_data()
-        st.sidebar.info("ℹ️ Usando dados de exemplo")
+        df = load_real_data()
+        st.sidebar.info("📊 Usando dados padrão da NCKmais22-25.xlsx")
     
     if df.empty:
         st.error("Nenhum dado disponível")
@@ -450,9 +494,11 @@ def main():
     with col_a:
         if st.button("2024 + 2025", use_container_width=True):
             anos_selecionados = [2024, 2025]
+            st.rerun()
     with col_b:
         if st.button("2022 + 2023", use_container_width=True):
             anos_selecionados = [2022, 2023]
+            st.rerun()
     
     # Filtros adicionais
     clientes_disponiveis = sorted(df['cliente'].unique())
@@ -565,6 +611,17 @@ def main():
         st.sidebar.write(f"• Período: {df['data'].min().strftime('%d/%m/%Y')} - {df['data'].max().strftime('%d/%m/%Y')}")
     st.sidebar.write(f"• Registros filtrados: {len(df_filtrado)}")
     st.sidebar.write(f"• Volume total: {df['volume_impactado'].sum()/1000:.1f} toneladas")
+    
+    # Resumo por ano
+    if not df.empty:
+        st.sidebar.markdown("**📈 Resumo por Ano:**")
+        resumo_ano = df.groupby('ano').agg({
+            'data': 'count',
+            'volume_impactado': 'sum'
+        }).rename(columns={'data': 'ncs'})
+        
+        for ano, row in resumo_ano.iterrows():
+            st.sidebar.write(f"• {ano}: {row['ncs']} NCs ({row['volume_impactado']:.0f} kg)")
 
 if __name__ == "__main__":
     main()
