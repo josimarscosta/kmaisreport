@@ -253,7 +253,7 @@ def process_uploaded_data(uploaded_file):
         return None
 
 def create_kpi_cards(df, anos_selecionados):
-    """Cria cards de KPIs"""
+    """Cria cards de KPIs - SEM MÉDIA POR NC"""
     if anos_selecionados:
         df_filtrado = df[df['ano'].isin(anos_selecionados)]
     else:
@@ -261,7 +261,6 @@ def create_kpi_cards(df, anos_selecionados):
     
     total_ncs = len(df_filtrado)
     volume_total = df_filtrado['volume_impactado'].sum()
-    volume_medio = volume_total / total_ncs if total_ncs > 0 else 0
     
     # Calcular tendência
     if len(anos_selecionados) >= 2:
@@ -277,7 +276,8 @@ def create_kpi_cards(df, anos_selecionados):
     
     periodo_text = "Todos os Anos" if not anos_selecionados else f"Anos {', '.join(map(str, sorted(anos_selecionados)))}"
     
-    col1, col2, col3, col4, col5 = st.columns(5)
+    # Apenas 4 colunas agora (removida a média)
+    col1, col2, col3, col4 = st.columns(4)
     
     with col1:
         st.markdown(f"""
@@ -305,15 +305,6 @@ def create_kpi_cards(df, anos_selecionados):
         """, unsafe_allow_html=True)
     
     with col4:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-title">Média por NC</div>
-            <div class="kpi-value">{volume_medio:.0f}</div>
-            <div class="kpi-subtitle">kg por NC</div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col5:
         st.markdown(f"""
         <div class="kpi-card">
             <div class="kpi-title">Tendência</div>
